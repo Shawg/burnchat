@@ -4,10 +4,11 @@ var app = express();
 var server = require('http').createServer(app);
 var io = require('socket.io')(server);
 
-//the number of participants in the room
-curr = 0;
-//the total number of participants allowed
-limit = 1
+server.listen(8000, function() {
+  console.log('server listening on *:8000');
+});
+
+var names = {};
 
 app.use(express.static(__dirname + '/public'));
 
@@ -16,7 +17,7 @@ app.get('/', function(req, res,next) {
 });
 
 app.get('/newchat', function(req, res,next) {
-  id = 123
+  id = Math.abs(sjcl.random.randomWords(1,7)[0]);
   res.redirect('/chat/'+id);
 });
 
@@ -28,32 +29,28 @@ app.get('/full', function(req, res, next) {
   res.sendFile(__dirname + '/full.html');
 })
 
-io.on('connection', function(socket){
+// usernames which are currently connected to the chat
+var usernames = {};
 
-  socket.on('addUser', function(data){
-    console.log(data);
+io.sockets.on('connection', function (socket) {
+
+  socket.on('adduser', function(data){
+    socket.username = data.name;
+    socket.room = data.id;
+    usernames[data.name] = data.name;
+    socket.join(data.id);
+    socket.emit('updatechat', 'SERVER', 'you have connected to '+data.id);
+    socket.broadcast.to(data.id).emit('updatechat', 'SERVER', data.name + ' has connected to this room');
   });
 
+  socket.on('sendchat', function (data) {
+    io.sockets.in(socket.room).emit('updatemessages', socket.username, data);
+  });
 
   socket.on('disconnect', function(){
-    curr = curr - 1;
-    limit = limit - 1;
-    if (limit == 0) {
-      limit = 1;
-    }
-    console.log('user disconnected');
+    delete usernames[socket.username];
+    io.sockets.emit('updateusers', usernames);
+    socket.broadcast.emit('updatechat', 'SERVER', socket.username + ' has disconnected');
+    socket.leave(socket.room);
   });
-
-  socket.on('chat message', function(msg){
-    console.log(msg);
-    io.emit('chat message', msg);
-  });
-
-  socket.on('invite', function(){
-    limit = limit+1;
-  });
-});
-
-server.listen(8000, function() {
-  console.log('server listening on *:8000');
 });

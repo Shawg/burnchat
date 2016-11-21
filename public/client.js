@@ -1,28 +1,38 @@
 var socket = io();
+
 var id = Number(window.location.pathname.match(/\/chat\/(\d+)$/)[1]);
-$('form').submit(function(){
-  msg = sjcl.encrypt("password", $('#m').val());
-  socket.emit('chat message', msg);
-  $('#m').val('');
-  return false;
-});
+name;
 
 $('#invite').click(function(){
-  alert('send friend this url: localhost:8000/chat/123');
+  url = 'localhost:8000/chat/'+id;
+  alert('send friend this url: '+url);
   socket.emit('invite sent');
 });
 
-socket.on('connect', function(){
-  console.log('addUser');
-  name = prompt('whats your name');
-  socket.emit('addUser', {
-        name: name,
-        id: id
-  });
-  console.log('addUser2');
+socket.on('updatechat', function (username, data) {
+  $('#messages').append('<b>'+username + ':</b> ' + data + '<br>');
 });
 
-socket.on('chat message', function(msg){
+socket.on('updatemessages', function (username, msg) {
   msg = sjcl.decrypt("password", msg);
-  $('#messages').append($('<li>').text(msg));
+  $('#messages').append('<b>'+username + ':</b> ' + msg + '<br>');
+});
+
+socket.on('connect', function(){
+  name = prompt("What's your name?");
+  socket.emit('adduser', {
+      name: name,
+      id: id
+  });
+});
+
+// on load of page
+$(function(){
+  $('form').submit(function(){
+    msg = $('#m').val();
+    msg = sjcl.encrypt("password", $('#m').val());
+    socket.emit('sendchat', msg);
+    $('#m').val('');
+    return false;
+  });
 });
