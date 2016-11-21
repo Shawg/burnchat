@@ -12,19 +12,16 @@ limit = 1
 app.use(express.static(__dirname + '/public'));
 
 app.get('/', function(req, res,next) {
-  if(curr < limit){
-    res.sendFile(__dirname + '/index.html');
-  } else {
-    res.redirect('/full');
-  }
+  res.sendFile(__dirname + '/index.html');
+});
+
+app.get('/newchat', function(req, res,next) {
+  id = 123
+  res.redirect('/chat/'+id);
 });
 
 app.get('/chat/:id', function(req, res,next) {
-  if(curr < limit){
-    res.sendFile(__dirname + '/index.html');
-  } else {
-    res.redirect('/full');
-  }
+  res.sendFile(__dirname + '/chat.html');
 });
 
 app.get('/full', function(req, res, next) {
@@ -32,8 +29,11 @@ app.get('/full', function(req, res, next) {
 })
 
 io.on('connection', function(socket){
-  curr = curr + 1;
-  console.log(curr+' connected');
+
+  socket.on('addUser', function(data){
+    console.log(data);
+  });
+
 
   socket.on('disconnect', function(){
     curr = curr - 1;
