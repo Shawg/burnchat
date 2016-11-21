@@ -3,6 +3,11 @@ var socket = io();
 var id = Number(window.location.pathname.match(/\/chat\/(\d+)$/)[1]);
 name;
 
+var key;
+
+var dhBase;
+var dhPrime;
+
 $('#invite').click(function(){
   url = 'localhost:8000/chat/'+id;
   alert('send friend this url: '+url);
@@ -24,6 +29,19 @@ socket.on('connect', function(){
       name: name,
       id: id
   });
+});
+
+socket.on('duplicateUsername', function(){
+  console.log('hello');
+  name = prompt("That name is already in use, please choose a different one");
+  socket.emit('adduser', {
+      name: name,
+      id: id
+  });
+});
+
+socket.on('newUserAuth', function(){
+  console.log('Authorzing');
 });
 
 // on load of page

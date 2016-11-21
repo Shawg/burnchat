@@ -34,13 +34,25 @@ var usernames = {};
 
 io.sockets.on('connection', function (socket) {
 
+  // updates the chat of everyone except the sender
+  // socket.broadcast.to(data.id).emit('updatechat', 'to','someone');
+
+  // updates chat of everyone
+  // io.sockets.in(socket.room).emit('updatechat', 'to', 'everyone');
+
   socket.on('adduser', function(data){
-    socket.username = data.name;
-    socket.room = data.id;
-    usernames[data.name] = data.name;
-    socket.join(data.id);
-    socket.emit('updatechat', 'SERVER', 'you have connected to '+data.id);
-    socket.broadcast.to(data.id).emit('updatechat', 'SERVER', data.name + ' has connected to this room');
+    //if the username isn't in the list it is free
+
+    // if(usernames[data.name] == null){
+      socket.username = data.name;
+      socket.room = data.id;
+      usernames[data.name] = data.name;
+      socket.join(data.id);
+      socket.emit('updatechat', 'SERVER', 'you have connected to '+data.id);
+      socket.broadcast.to(data.id).emit('updatechat', 'SERVER', data.name + ' has connected to this room');
+    // } else {
+    //   io.sockets.in(socket.room).emit('duplicateUsername', 'to', 'everyone');
+    // }
   });
 
   socket.on('sendchat', function (data) {
@@ -50,7 +62,7 @@ io.sockets.on('connection', function (socket) {
   socket.on('disconnect', function(){
     delete usernames[socket.username];
     io.sockets.emit('updateusers', usernames);
-    socket.broadcast.emit('updatechat', 'SERVER', socket.username + ' has disconnected');
+    socket.broadcast.to(socket.room).emit('updatechat', 'SERVER', socket.username + ' has disconnected');
     socket.leave(socket.room);
   });
 });
