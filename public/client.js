@@ -39,6 +39,12 @@ socket.on('duplicateUsername', function(){
   });
 });
 
+socket.on('firstUser', function(){
+  url = 'localhost:8000/chat/'+id;
+  alert('Nobody is here yet, invite someone to chat with this url: '+url);
+  socket.emit('invite sent');
+});
+
 socket.on('newUserAuth', function(){
   console.log('Authorzing');
 });

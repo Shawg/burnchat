@@ -52,12 +52,13 @@ io.sockets.on('connection', function (socket) {
       socket.username = data.name;
       socket.room = data.id;
       if(io.sockets.adapter.rooms[data.id] == null) {
-        //Nobody is in the room yet
+        firstUser(socket, data);
+        return;
+      } else {
+        additionalUsers(socket, data);
+        return;
       }
-      usernames[data.name] = data.name;
-      socket.join(data.id);
-      socket.emit('updatechat', 'SERVER', 'you have connected to '+data.id);
-      socket.broadcast.to(data.id).emit('updatechat', 'SERVER', data.name + ' has connected to this room');
+      return;
   });
 
   socket.on('sendchat', function (data) {
@@ -71,3 +72,18 @@ io.sockets.on('connection', function (socket) {
     socket.leave(socket.room);
   });
 });
+
+function firstUser(socket, data){
+    usernames[data.name] = data.name;
+    socket.join(data.id);
+    socket.emit('firstUser');
+    socket.emit('updatechat', 'SERVER', 'you have connected to '+data.id);
+    socket.broadcast.to(data.id).emit('updatechat', 'SERVER', data.name + ' has connected to this room');
+}
+
+function additionalUsers(socket, data){
+    usernames[data.name] = data.name;
+    socket.join(data.id);
+    socket.emit('updatechat', 'SERVER', 'you have connected to '+data.id);
+    socket.broadcast.to(data.id).emit('updatechat', 'SERVER', data.name + ' has connected to this room');
+}
