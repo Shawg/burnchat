@@ -32,7 +32,6 @@ socket.on('connect', function(){
 });
 
 socket.on('duplicateUsername', function(){
-  console.log('hello');
   name = prompt("That name is already in use, please choose a different one");
   socket.emit('adduser', {
       name: name,

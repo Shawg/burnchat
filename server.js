@@ -35,24 +35,29 @@ var usernames = {};
 io.sockets.on('connection', function (socket) {
 
   // updates the chat of everyone except the sender
-  // socket.broadcast.to(data.id).emit('updatechat', 'to','someone');
+  // socket.broadcast.to(socket.room).emit(foo);
 
   // updates chat of everyone
-  // io.sockets.in(socket.room).emit('updatechat', 'to', 'everyone');
+  // io.sockets.in(socket.room).emit(foo);
+
+  // returns message to original sender
+  // socket.emit(foo);
 
   socket.on('adduser', function(data){
-    //if the username isn't in the list it is free
-
-    // if(usernames[data.name] == null){
+      // duplicate username
+      if(usernames[data.name] == data.name) {
+        socket.emit('duplicateUsername');
+        return;
+      }
       socket.username = data.name;
       socket.room = data.id;
+      if(io.sockets.adapter.rooms[data.id] == null) {
+        //Nobody is in the room yet
+      }
       usernames[data.name] = data.name;
       socket.join(data.id);
       socket.emit('updatechat', 'SERVER', 'you have connected to '+data.id);
       socket.broadcast.to(data.id).emit('updatechat', 'SERVER', data.name + ' has connected to this room');
-    // } else {
-    //   io.sockets.in(socket.room).emit('duplicateUsername', 'to', 'everyone');
-    // }
   });
 
   socket.on('sendchat', function (data) {
