@@ -4,14 +4,13 @@ var id = Number(window.location.pathname.match(/\/chat\/(\d+)$/)[1]);
 name;
 
 var key;
-
 var dhBase;
 var dhPrime;
 
 $('#invite').click(function(){
   url = 'localhost:8000/chat/'+id;
   alert('send friend this url: '+url);
-  socket.emit('invite sent');
+  socket.emit('inviteSent');
 });
 
 socket.on('updatechat', function (username, data) {
@@ -37,6 +36,10 @@ socket.on('duplicateUsername', function(){
       name: name,
       id: id
   });
+});
+
+socket.on('noInvite', function(destination){
+  window.location.href = destination;
 });
 
 socket.on('firstUser', function(){

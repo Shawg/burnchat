@@ -9,6 +9,7 @@ server.listen(8000, function() {
 });
 
 var names = {};
+var invites = {};
 
 app.use(express.static(__dirname + '/public'));
 
@@ -71,19 +72,31 @@ io.sockets.on('connection', function (socket) {
     socket.broadcast.to(socket.room).emit('updatechat', 'SERVER', socket.username + ' has disconnected');
     socket.leave(socket.room);
   });
+
+  socket.on('inviteSent', function(){
+    invites[socket.room] = invites[socket.room] + 1;
+  });
 });
 
 function firstUser(socket, data){
+    //add username to list and automatically open one invite
     usernames[data.name] = data.name;
     socket.join(data.id);
+    invites[socket.room] = 1;
     socket.emit('firstUser');
     socket.emit('updatechat', 'SERVER', 'you have connected to '+data.id);
     socket.broadcast.to(data.id).emit('updatechat', 'SERVER', data.name + ' has connected to this room');
 }
 
 function additionalUsers(socket, data){
+    if(invites[data.id] == 0) {
+      var destination = '/full';
+      socket.emit('noInvite', destination);
+      return;
+    }
     usernames[data.name] = data.name;
     socket.join(data.id);
+    invites[socket.room] = invites[socket.room] - 1;
     socket.emit('updatechat', 'SERVER', 'you have connected to '+data.id);
     socket.broadcast.to(data.id).emit('updatechat', 'SERVER', data.name + ' has connected to this room');
 }
