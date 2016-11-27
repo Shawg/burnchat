@@ -31,7 +31,7 @@ app.get('/chat/:id/invite/:invite', function(req, res,next) {
 });
 
 app.get('/full', function(req, res, next) {
-  additional.sendFile(__dirname + '/full.html');
+  res.sendFile(__dirname + '/full.html');
 })
 
 // usernames which are currently connected to the chat
@@ -77,7 +77,7 @@ io.sockets.on('connection', function (socket) {
   });
 
   socket.on('inviteSent', function(){
-    invites[socket.room] = invites[socket.room] + 1;
+    invites[socket.room].count = invites[socket.room].count + 1;
   });
 
   socket.on('AuthReq1', function(data){
@@ -88,21 +88,25 @@ function firstUser(socket, data){
     //add username to list and automatically open one invite
     usernames[data.name] = data.name;
     socket.join(data.id);
-    invites[socket.room] = 1;
+    invites[socket.room] = {'count': 0, 'invites': []};
+    console.log('first user');
+    console.log(invites);
     socket.emit('firstUser');
     socket.emit('updatechat', 'SERVER', 'you have connected to '+data.id);
     socket.broadcast.to(data.id).emit('updatechat', 'SERVER', data.name + ' has connected to this room');
 }
 
 function additionalUsers(socket, data){
-    if(invites[data.id] == 0) {
+    if(invites[data.id].count == 0) {
       var destination = '/full';
       socket.emit('noInvite', destination);
       return;
     }
+    console.log('additional user');
+    console.log(invites);
     usernames[data.name] = data.name;
     socket.join(data.id);
-    invites[socket.room] = invites[socket.room] - 1;
+    invites[socket.room].count = invites[socket.room].count - 1;
     socket.emit('newUserAuth1');
     socket.emit('updatechat', 'SERVER', 'you have connected to '+data.id);
     socket.broadcast.to(data.id).emit('updatechat', 'SERVER', data.name + ' has connected to this room');

@@ -41,7 +41,7 @@ socket.on('duplicateUsername', function(){
   name = prompt("That name is already in use, please choose a different one");
   socket.emit('adduser', {
       name: name,
-      id: id
+      id: getUrlParam("chat")
   });
 });
 
