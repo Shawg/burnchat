@@ -26,15 +26,18 @@ app.get('/chat/:id', function(req, res,next) {
   res.sendFile(__dirname + '/chat.html');
 });
 
+app.get('/chat/:id/invite/:invite', function(req, res,next) {
+  res.sendFile(__dirname + '/chat.html');
+});
+
 app.get('/full', function(req, res, next) {
-  res.sendFile(__dirname + '/full.html');
+  additional.sendFile(__dirname + '/full.html');
 })
 
 // usernames which are currently connected to the chat
 var usernames = {};
 
 io.sockets.on('connection', function (socket) {
-
   // updates the chat of everyone except the sender
   // socket.broadcast.to(socket.room).emit(foo);
 
@@ -76,6 +79,9 @@ io.sockets.on('connection', function (socket) {
   socket.on('inviteSent', function(){
     invites[socket.room] = invites[socket.room] + 1;
   });
+
+  socket.on('AuthReq1', function(data){
+  });
 });
 
 function firstUser(socket, data){
@@ -97,6 +103,7 @@ function additionalUsers(socket, data){
     usernames[data.name] = data.name;
     socket.join(data.id);
     invites[socket.room] = invites[socket.room] - 1;
+    socket.emit('newUserAuth1');
     socket.emit('updatechat', 'SERVER', 'you have connected to '+data.id);
     socket.broadcast.to(data.id).emit('updatechat', 'SERVER', data.name + ' has connected to this room');
 }

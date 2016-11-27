@@ -1,17 +1,24 @@
 var socket = io();
 
-var id = Number(window.location.pathname.match(/\/chat\/(\d+)$/)[1]);
-name;
-
-var key;
-var dhBase;
-var dhPrime;
+var name, key, nonce;
+var dhBase = 5;
+var dhPrime = 23;
 
 $('#invite').click(function(){
-  url = 'localhost:8000/chat/'+id;
-  alert('send friend this url: '+url);
-  socket.emit('inviteSent');
+  inviteUser();
 });
+
+socket.on('firstUser', function(){
+  inviteUser();
+});
+
+function inviteUser(){
+  invite = rand(25);
+  id = getUrlParam("chat");
+  url = 'localhost:8000/chat/'+id+'/invite/'+invite;
+  alert('Nobody is here yet, invite someone to chat with this url: '+url);
+  socket.emit('inviteSent', invite);
+}
 
 socket.on('updatechat', function (username, data) {
   $('#messages').append('<b>'+username + ':</b> ' + data + '<br>');
@@ -26,7 +33,7 @@ socket.on('connect', function(){
   name = prompt("What's your name?");
   socket.emit('adduser', {
       name: name,
-      id: id
+      id: getUrlParam("chat")
   });
 });
 
@@ -42,14 +49,15 @@ socket.on('noInvite', function(destination){
   window.location.href = destination;
 });
 
-socket.on('firstUser', function(){
-  url = 'localhost:8000/chat/'+id;
-  alert('Nobody is here yet, invite someone to chat with this url: '+url);
-  socket.emit('invite sent');
-});
 
-socket.on('newUserAuth', function(){
+socket.on('newUserAuth1', function(){
   console.log('Authorzing');
+  nonce = Math.abs(sjcl.random.randomWords(1,7)[0]);
+  AuthReq1 = {
+    "name": name,
+    "nonce": nonce
+  }
+  socket.emit('AuthReq1', AuthReq1);
 });
 
 // on load of page
@@ -62,3 +70,13 @@ $(function(){
     return false;
   });
 });
+
+function rand(x){
+  return Math.floor((Math.random() * x) + 1);
+}
+
+function getUrlParam(val){
+  vars = window.location.pathname.split('/');
+  index = vars.indexOf(val);
+  return vars[index + 1];
+}
