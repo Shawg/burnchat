@@ -14,8 +14,9 @@ socket.on('firstUser', function(){
 
 function inviteUser(){
   invite = rand(25);
-  id = getUrlParam("chat");
-  url = 'localhost:8000/chat/'+id+'/invite/'+invite;
+  id = rand(25);
+  room = getUrlParam("chat");
+  url = location.origin+'/chat/'+room+'/id/'+id+'/invite/'+invite;
   alert('Nobody is here yet, invite someone to chat with this url: '+url);
   socket.emit('inviteSent', invite);
 }

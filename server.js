@@ -10,6 +10,7 @@ server.listen(8000, function() {
 
 var names = {};
 var invites = {};
+var keyIds = {};
 
 app.use(express.static(__dirname + '/public'));
 
@@ -18,15 +19,15 @@ app.get('/', function(req, res,next) {
 });
 
 app.get('/newchat', function(req, res,next) {
-  id = Math.abs(sjcl.random.randomWords(1,7)[0]);
-  res.redirect('/chat/'+id);
+  room = Math.abs(sjcl.random.randomWords(1,7)[0]);
+  res.redirect('/chat/'+room);
 });
 
-app.get('/chat/:id', function(req, res,next) {
+app.get('/chat/:room', function(req, res,next) {
   res.sendFile(__dirname + '/chat.html');
 });
 
-app.get('/chat/:id/invite/:invite', function(req, res,next) {
+app.get('/chat/:room/id/:id/invite/:invite', function(req, res,next) {
   res.sendFile(__dirname + '/chat.html');
 });
 
