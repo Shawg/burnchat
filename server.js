@@ -82,7 +82,9 @@ io.sockets.on('connection', function (socket) {
     invites[socket.room].keys.push(data);
   });
 
-  socket.on('AuthReq1', function(data){
+  socket.on('dhResponse', function(data){
+    console.log(data);
+    io.to(data.socket).emit('dhExtend');
   });
 });
 
@@ -111,8 +113,14 @@ function additionalUsers(socket, data){
     invites[socket.room].keys.splice(inviteIndex, 1);
     usernames[data.name] = data.name;
     socket.join(data.id);
+    console.log(socket.id);
     invites[socket.room].count = invites[socket.room].count - 1;
-    socket.emit('newUserAuth1');
+    //socket is so the GDH.2 array can be sent to the requesting
+    //user, ID allows the user's socket to be targeted
+    socket.broadcast.to(data.id).emit('dhRequest', {
+      socket: socket.id,
+      id: data.id
+    });
     socket.emit('updatechat', 'SERVER', 'you have connected to '+data.id);
     socket.broadcast.to(data.id).emit('updatechat', 'SERVER', data.name + ' has connected to this room');
 }
