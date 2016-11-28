@@ -76,8 +76,9 @@ io.sockets.on('connection', function (socket) {
     socket.leave(socket.room);
   });
 
-  socket.on('inviteSent', function(){
+  socket.on('inviteSent', function(data){
     invites[socket.room].count = invites[socket.room].count + 1;
+    invites[socket.room].keys.push(data);
   });
 
   socket.on('AuthReq1', function(data){
@@ -88,9 +89,7 @@ function firstUser(socket, data){
     //add username to list and automatically open one invite
     usernames[data.name] = data.name;
     socket.join(data.id);
-    invites[socket.room] = {'count': 0, 'invites': []};
-    console.log('first user');
-    console.log(invites);
+    invites[socket.room] = {'count': 0, 'keys': []};
     socket.emit('firstUser');
     socket.emit('updatechat', 'SERVER', 'you have connected to '+data.id);
     socket.broadcast.to(data.id).emit('updatechat', 'SERVER', data.name + ' has connected to this room');
@@ -102,12 +101,24 @@ function additionalUsers(socket, data){
       socket.emit('noInvite', destination);
       return;
     }
-    console.log('additional user');
-    console.log(invites);
+    if(!arrayIncludes(invites[socket.room].keys, data.invite)) {
+      var destination = '/full';
+      socket.emit('noInvite', destination);
+      return;
+    }
     usernames[data.name] = data.name;
     socket.join(data.id);
     invites[socket.room].count = invites[socket.room].count - 1;
     socket.emit('newUserAuth1');
     socket.emit('updatechat', 'SERVER', 'you have connected to '+data.id);
     socket.broadcast.to(data.id).emit('updatechat', 'SERVER', data.name + ' has connected to this room');
+}
+
+function arrayIncludes(arr, val) {
+  for(i = 0; i < arr.length; i++) {
+    if(arr[i] == val){
+      return true;
+    }
+  }
+  return false;
 }

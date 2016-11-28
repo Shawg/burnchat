@@ -31,10 +31,18 @@ socket.on('updatemessages', function (username, msg) {
 
 socket.on('connect', function(){
   name = prompt("What's your name?");
-  socket.emit('adduser', {
-      name: name,
-      id: getUrlParam("chat")
-  });
+  if(getUrlParam('invite') == null){
+    socket.emit('adduser', {
+        name: name,
+        id: getUrlParam("chat")
+    });
+  } else {
+    socket.emit("adduser", {
+        name: name,
+        id: getUrlParam("chat"),
+        invite: getUrlParam("invite")
+    });
+  }
 });
 
 socket.on('duplicateUsername', function(){
