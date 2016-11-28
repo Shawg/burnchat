@@ -106,6 +106,8 @@ function additionalUsers(socket, data){
       socket.emit('noInvite', destination);
       return;
     }
+    inviteIndex = indexOf(invites[socket.room].keys, data.invite);
+    invites[socket.room].keys.splice(inviteIndex, 1);
     usernames[data.name] = data.name;
     socket.join(data.id);
     invites[socket.room].count = invites[socket.room].count - 1;
@@ -121,4 +123,13 @@ function arrayIncludes(arr, val) {
     }
   }
   return false;
+}
+
+function indexOf(arr, val) {
+  for(i = 0; i < arr.length; i++) {
+    if(arr[i] == val){
+      return i;
+    }
+  }
+  return -1;
 }
