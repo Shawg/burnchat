@@ -6,6 +6,7 @@ var dhPrime = 23;
 var dhKeys = [];
 var dhSecret;
 var dhSecretNew;
+var keyIndex;
 var inviteIds = [];
 
 $('#invite').click(function(){
@@ -14,7 +15,8 @@ $('#invite').click(function(){
 
 socket.on('firstUser', function(){
   dhSecret = rand(25);
-  dhKeys.push(fastModularExponentiation(dhBase,1,dhPrime));
+  keyIndex = dhKeys.length;
+  dhKeys.push(dhBase);
   inviteUser();
 });
 
@@ -66,11 +68,14 @@ socket.on('noInvite', function(destination){
 });
 
 socket.on('dhRequest', function(data){
-  console.log('diffe request');
   dhSecretNew = rand(25);
+  //adds temp secret value to all keys
+  var i = dhKeys.length;
+  var newKeys = [];
+  while(i--) { newKeys[i] = fastModularExponentiation(dhKeys[i], dhSecretNew, dhPrime); }
   socket.emit('dhResponse', {
-    dhKeys: dhKeys,
-    dhPublic: fastModularExponentiation(dhBase, dhSecretNew, dhPrime),
+    dhKeys: newKeys,
+    dhPublic: fastModularExponentiation(dhBase, dhSecret*dhSecretNew, dhPrime),
     socket: data.socket
   });
 });
@@ -79,10 +84,12 @@ socket.on('dhExtend', function(data){
   dhSecret = rand(25);
   dhKeys = data.dhKeys.splice();
   var i = data.dhKeys.length;
+  keyIndex = i;
   while(i--) { dhKeys[i] = fastModularExponentiation(data.dhKeys[i], dhSecret, dhPrime); }
-  dhKeys[data.dhKeys.length] = data.dhPublic;
-  console.log(dhKeys);
-  console.log(data.dhKeys);
+  dhKeys[keyIndex] = data.dhPublic;
+  socket.emit('dhBroadcast', {
+    dhKeys: dhKeys
+  });
 });
 // on load of page
 $(function(){

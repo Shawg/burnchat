@@ -83,12 +83,16 @@ io.sockets.on('connection', function (socket) {
   });
 
   socket.on('dhResponse', function(data){
-    console.log(data);
     io.to(data.socket).emit('dhExtend', {
       dhKeys: data.dhKeys,
       dhPublic: data.dhPublic
     });
   });
+
+  socket.on('dhBroadcast', function(data){
+    console.log(data);
+  });
+
 });
 
 function firstUser(socket, data){
