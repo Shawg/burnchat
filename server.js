@@ -84,7 +84,10 @@ io.sockets.on('connection', function (socket) {
 
   socket.on('dhResponse', function(data){
     console.log(data);
-    io.to(data.socket).emit('dhExtend');
+    io.to(data.socket).emit('dhExtend', {
+      dhKeys: data.dhKeys,
+      dhPublic: data.dhPublic
+    });
   });
 });
 

@@ -75,8 +75,14 @@ socket.on('dhRequest', function(data){
   });
 });
 
-socket.on('dhExtend', function(){
-  console.log('dh extending');
+socket.on('dhExtend', function(data){
+  dhSecret = rand(25);
+  dhKeys = data.dhKeys.splice();
+  var i = data.dhKeys.length;
+  while(i--) { dhKeys[i] = fastModularExponentiation(data.dhKeys[i], dhSecret, dhPrime); }
+  dhKeys[data.dhKeys.length] = data.dhPublic;
+  console.log(dhKeys);
+  console.log(data.dhKeys);
 });
 // on load of page
 $(function(){
