@@ -44,12 +44,12 @@ socket.on('connect', function(){
   if(getUrlParam('invite') == null){
     socket.emit('adduser', {
         name: name,
-        id: getUrlParam("chat")
+        chat: getUrlParam("chat")
     });
   } else {
     socket.emit("adduser", {
         name: name,
-        id: getUrlParam("chat"),
+        chat: getUrlParam("chat"),
         invite: getUrlParam("invite")
     });
   }
@@ -59,7 +59,7 @@ socket.on('duplicateUsername', function(){
   name = prompt("That name is already in use, please choose a different one");
   socket.emit('adduser', {
       name: name,
-      id: getUrlParam("chat")
+      chat: getUrlParam("chat")
   });
 });
 

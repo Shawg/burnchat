@@ -55,8 +55,8 @@ io.sockets.on('connection', function (socket) {
         return;
       }
       socket.username = data.name;
-      socket.room = data.id;
-      if(io.sockets.adapter.rooms[data.id] == null) {
+      socket.room = data.chat;
+      if(io.sockets.adapter.rooms[data.chat] == null) {
         firstUser(socket, data);
         return;
       } else {
@@ -98,15 +98,16 @@ io.sockets.on('connection', function (socket) {
 function firstUser(socket, data){
     //add username to list and automatically open one invite
     usernames[data.name] = data.name;
-    socket.join(data.id);
+    socket.join(data.chat);
     invites[socket.room] = {'count': 0, 'keys': []};
     socket.emit('firstUser');
-    socket.emit('updatechat', 'SERVER', 'you have connected to '+data.id);
-    socket.broadcast.to(data.id).emit('updatechat', 'SERVER', data.name + ' has connected to this room');
+    socket.emit('updatechat', 'SERVER', 'you have connected to '+data.chat);
+    socket.broadcast.to(data.chat).emit('updatechat', 'SERVER', data.name + ' has connected to this room');
 }
 
 function additionalUsers(socket, data){
-    if(invites[data.id].count == 0) {
+  console.log(data);
+    if(invites[data.chat].count == 0) {
       var destination = '/full';
       socket.emit('noInvite', destination);
       return;
@@ -119,17 +120,17 @@ function additionalUsers(socket, data){
     inviteIndex = indexOf(invites[socket.room].keys, data.invite);
     invites[socket.room].keys.splice(inviteIndex, 1);
     usernames[data.name] = data.name;
-    socket.join(data.id);
+    socket.join(data.chat);
     console.log(socket.id);
     invites[socket.room].count = invites[socket.room].count - 1;
     //socket is so the GDH.2 array can be sent to the requesting
     //user, ID allows the user's socket to be targeted
-    socket.broadcast.to(data.id).emit('dhRequest', {
+    socket.broadcast.to(data.chat).emit('dhRequest', {
       socket: socket.id,
-      id: data.id
+      id: data.chat
     });
-    socket.emit('updatechat', 'SERVER', 'you have connected to '+data.id);
-    socket.broadcast.to(data.id).emit('updatechat', 'SERVER', data.name + ' has connected to this room');
+    socket.emit('updatechat', 'SERVER', 'you have connected to '+data.chat);
+    socket.broadcast.to(data.chat).emit('updatechat', 'SERVER', data.name + ' has connected to this room');
 }
 
 function arrayIncludes(arr, val) {
