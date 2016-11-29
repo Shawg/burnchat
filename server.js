@@ -90,7 +90,7 @@ io.sockets.on('connection', function (socket) {
   });
 
   socket.on('dhBroadcast', function(data){
-    console.log(data);
+    io.sockets.in(socket.room).emit('dhBroadcast', data.dhKeys);
   });
 
 });

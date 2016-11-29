@@ -73,11 +73,17 @@ socket.on('dhRequest', function(data){
   var i = dhKeys.length;
   var newKeys = [];
   while(i--) { newKeys[i] = fastModularExponentiation(dhKeys[i], dhSecretNew, dhPrime); }
-  socket.emit('dhResponse', {
-    dhKeys: newKeys,
-    dhPublic: fastModularExponentiation(dhBase, dhSecret*dhSecretNew, dhPrime),
-    socket: data.socket
+    socket.emit('dhResponse', {
+      dhKeys: newKeys,
+      dhPublic: fastModularExponentiation(dhBase, dhSecret*dhSecretNew, dhPrime),
+      socket: data.socket
   });
+});
+
+socket.on('dhBroadcast', function(data){
+  dhKeys = data;
+  key = fastModularExponentiation(dhKeys[keyIndex], dhSecret, dhPrime);
+  console.log(key);
 });
 
 socket.on('dhExtend', function(data){
