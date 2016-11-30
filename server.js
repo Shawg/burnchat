@@ -83,6 +83,8 @@ io.sockets.on('connection', function (socket) {
   });
 
   socket.on('dhResponse', function(data){
+    console.log('dhResponse');
+    console.log(data);
     io.to(data.socket).emit('dhExtend', {
       dhKeys: data.dhKeys,
       dhPublic: data.dhPublic
@@ -127,7 +129,7 @@ function additionalUsers(socket, data){
     //user, ID allows the user's socket to be targeted
     socket.broadcast.to(data.chat).emit('dhRequest', {
       socket: socket.id,
-      id: data.chat
+      id: data.id
     });
     socket.emit('updatechat', 'SERVER', 'you have connected to '+data.chat);
     socket.broadcast.to(data.chat).emit('updatechat', 'SERVER', data.name + ' has connected to this room');

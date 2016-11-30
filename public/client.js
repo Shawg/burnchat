@@ -1,8 +1,8 @@
 var socket = io();
 
 var name, key, nonce;
-var dhBase = 5;
-var dhPrime = 23;
+var dhBase = 8;
+var dhPrime = 139;
 var dhKeys = [];
 var dhSecret;
 var dhSecretNew;
@@ -14,15 +14,16 @@ $('#invite').click(function(){
 });
 
 socket.on('firstUser', function(){
-  dhSecret = rand(25);
+  dhSecret = rand(50);
   keyIndex = dhKeys.length;
   dhKeys.push(dhBase);
+  key = dhBase;
   inviteUser();
 });
 
 function inviteUser(){
-  invite = rand(25);
-  id = rand(25);
+  invite = rand(999);
+  id = rand(999);
   inviteIds.push(id);
   room = getUrlParam("chat");
   url = location.origin+'/chat/'+room+'/id/'+id+'/invite/'+invite;
@@ -49,6 +50,7 @@ socket.on('connect', function(){
   } else {
     socket.emit("adduser", {
         name: name,
+        id: getUrlParam("id"),
         chat: getUrlParam("chat"),
         invite: getUrlParam("invite")
     });
@@ -68,16 +70,28 @@ socket.on('noInvite', function(destination){
 });
 
 socket.on('dhRequest', function(data){
-  dhSecretNew = rand(25);
+  if(inviteIds.indexOf(parseInt(data.id)) == -1){
+    return;
+  }
+  dhSecretNew = rand(50);
   //adds temp secret value to all keys
   var i = dhKeys.length;
   var newKeys = [];
   while(i--) { newKeys[i] = fastModularExponentiation(dhKeys[i], dhSecretNew, dhPrime); }
+  if(newKeys.length == 1){
+    tmpKey = fastModularExponentiation(dhBase, dhSecret, dhPrime);
     socket.emit('dhResponse', {
       dhKeys: newKeys,
-      dhPublic: fastModularExponentiation(dhBase, dhSecret*dhSecretNew, dhPrime),
+      dhPublic: fastModularExponentiation(tmpKey, dhSecretNew, dhPrime),
       socket: data.socket
-  });
+    });
+  } else {
+    socket.emit('dhResponse', {
+      dhKeys: newKeys,
+      dhPublic: fastModularExponentiation(key, dhSecretNew, dhPrime),
+      socket: data.socket
+    });
+  }
 });
 
 socket.on('dhBroadcast', function(data){
@@ -87,7 +101,7 @@ socket.on('dhBroadcast', function(data){
 });
 
 socket.on('dhExtend', function(data){
-  dhSecret = rand(25);
+  dhSecret = rand(50);
   dhKeys = data.dhKeys.splice();
   var i = data.dhKeys.length;
   keyIndex = i;
