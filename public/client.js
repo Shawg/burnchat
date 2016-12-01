@@ -31,15 +31,6 @@ function inviteUser(){
   socket.emit('inviteSent', invite);
 }
 
-socket.on('updatechat', function (username, data) {
-  $('#messages').append('<b>'+username + ':</b> ' + data + '<br>');
-});
-
-socket.on('updatemessages', function (username, msg) {
-  msg = sjcl.decrypt("password", msg);
-  $('#messages').append('<b>'+username + ':</b> ' + msg + '<br>');
-});
-
 socket.on('connect', function(){
   name = prompt("What's your name?");
   if(getUrlParam('invite') == null){
@@ -111,11 +102,21 @@ socket.on('dhExtend', function(data){
     dhKeys: dhKeys
   });
 });
+
+socket.on('updatechat', function (username, data) {
+  $('#messages').append('<b>'+username + ':</b> ' + data + '<br>');
+});
+
+socket.on('updatemessages', function (username, msg) {
+  msg = sjcl.decrypt(String(key), msg);
+  $('#messages').append('<b>'+username + ':</b> ' + msg + '<br>');
+});
+
 // on load of page
 $(function(){
   $('form').submit(function(){
     msg = $('#m').val();
-    msg = sjcl.encrypt("password", $('#m').val());
+    msg = sjcl.encrypt(String(key), $('#m').val());
     socket.emit('sendchat', msg);
     $('#m').val('');
     return false;
