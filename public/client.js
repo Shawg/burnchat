@@ -104,12 +104,18 @@ socket.on('dhExtend', function(data){
 });
 
 socket.on('updatechat', function (username, data) {
-  $('#messages').append('<b>'+username + ':</b> ' + data + '<br>');
+  message = $("<span></span></br>");
+  username = username+": ";
+  message.text(username).append(data);
+  $('#messages').append(message);
 });
 
 socket.on('updatemessages', function (username, msg) {
   msg = sjcl.decrypt(String(key), msg);
-  $('#messages').append('<b>'+username + ':</b> ' + msg + '<br>');
+  message = $("<span></span></br>");
+  username = username+": ";
+  message.text(username).append(data);
+  $('#messages').append(message);
 });
 
 // on load of page
