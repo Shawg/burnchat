@@ -1,13 +1,8 @@
 var socket = io();
 
 var name, key, nonce;
-<<<<<<< HEAD
 var dhBase = bigInt("13");
 var dhPrime = bigInt("139");
-=======
-var dhBase = 8;
-var dhPrime = 139;
->>>>>>> a337463e5fdca9350994ee9c886afb9cb6eb14af
 var dhKeys = [];
 var dhSecret;
 var dhSecretNew;
@@ -36,7 +31,6 @@ function inviteUser(){
   url = location.origin+'/chat/'+room+'/id/'+id+'/invite/'+invite;
   document.getElementById("inviteURL").innerHTML = url;
   modal.style.display = "block";
-  
   //alert('Nobody is here yet, invite someone to chat with this url: '+url);
   socket.emit('inviteSent', invite);
 }
@@ -86,11 +80,7 @@ socket.on('dhRequest', function(data){
   if(inviteIds.indexOf(parseInt(data.id)) == -1){
     return;
   }
-<<<<<<< HEAD
   dhSecretNew = bigInt(String(rand(200)));
-=======
-  dhSecretNew = rand(50);
->>>>>>> a337463e5fdca9350994ee9c886afb9cb6eb14af
   //adds temp secret value to all keys
   var i = dhKeys.length;
   var newKeys = [];
@@ -156,7 +146,7 @@ socket.on('updatemessages', function (username, msg) {
   msg = sjcl.decrypt(key.toString(), msg);
   message = $("<span></span></br>");
   username = username+": ";
-  message.text(username).append(data);
+  message.text(username).append(msg);
   $('#messages').append(message);
 });
 
