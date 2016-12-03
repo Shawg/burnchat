@@ -1,7 +1,7 @@
 var socket = io();
 
 var name, key, nonce;
-var dhBase = 13;
+var dhBase = 8;
 var dhPrime = 139;
 var dhKeys = [];
 var dhSecret;
@@ -16,7 +16,7 @@ $('.invite').click(function(){
 });
 
 socket.on('firstUser', function(){
-  dhSecret = rand(200);
+  dhSecret = rand(50);
   keyIndex = dhKeys.length;
   dhKeys.push(dhBase);
   key = dhBase;
@@ -80,7 +80,7 @@ socket.on('dhRequest', function(data){
   if(inviteIds.indexOf(parseInt(data.id)) == -1){
     return;
   }
-  dhSecretNew = rand(200);
+  dhSecretNew = rand(50);
   //adds temp secret value to all keys
   var i = dhKeys.length;
   var newKeys = [];
@@ -130,7 +130,7 @@ socket.on('updatemessages', function (username, msg) {
   msg = sjcl.decrypt(String(key), msg);
   message = $("<span></span></br>");
   username = username+": ";
-  message.text(username).append(msg);
+  message.text(username).append(data);
   $('#messages').append(message);
 });
 

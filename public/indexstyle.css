@@ -1,8 +1,7 @@
 * { margin: 0; padding: 0; box-sizing: border-box; }
 body { font: 13px Helvetica, Arial; }
-form { background: #b27770; padding: 3px; position: fixed; bottom: 0; width: 100%;}
-form input { #c0392b; padding: 11px; width: 90%; margin-right: .5%; }
-form button { width: 9%; background: #c0392b; border: 1px solid white;
+form { background: #b27770; padding: 3px; width: 100%;}
+form button { width: 25%; min-width: 300px; background: #c0392b; border: 1px solid white;
 padding: 10px; border-radius:3px;color:white;}
 form button:hover {background: #e74c3c}
 #messages { list-style-type: none; margin: 0; padding: 0; }
