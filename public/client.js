@@ -33,6 +33,7 @@ function inviteUser(){
 
 socket.on('connect', function(){
   name = prompt("What's your name?");
+  // name = encodeHTML(name);
   if(getUrlParam('invite') == null){
     socket.emit('adduser', {
         name: name,
@@ -50,6 +51,7 @@ socket.on('connect', function(){
 
 socket.on('duplicateUsername', function(){
   name = prompt("That name is already in use, please choose a different one");
+  // name = encodeHTML(name);
   socket.emit('adduser', {
       name: name,
       chat: getUrlParam("chat")
@@ -105,14 +107,18 @@ socket.on('dhExtend', function(data){
 
 socket.on('updatechat', function (username, data) {
   message = $("<span></span></br>");
+  username = encodeHTML(username);
   username = username+": ";
+  data = encodeHTML(data);
   message.text(username).append(data);
   $('#messages').append(message);
 });
 
 socket.on('updatemessages', function (username, msg) {
   msg = sjcl.decrypt(String(key), msg);
+  msg = encodeHTML(msg);
   message = $("<span></span></br>");
+  // username = encodeHTML(username);
   username = username+": ";
   message.text(username).append(msg);
   $('#messages').append(message);
@@ -122,7 +128,8 @@ socket.on('updatemessages', function (username, msg) {
 $(function(){
   $('form').submit(function(){
     msg = $('#m').val();
-    msg = sjcl.encrypt(String(key), $('#m').val());
+    msg = encodeHTML(msg);
+    msg = sjcl.encrypt(String(key), msg);
     socket.emit('sendchat', msg);
     $('#m').val('');
     return false;
@@ -163,3 +170,10 @@ var fastModularExponentiation = function(a, b, n) {
   return result;
 };
 
+function encodeHTML(s) {
+  return s
+  .replace(/</g, '&lt;')
+  .replace(/>/g, '&gt;')
+  .replace(/"/g, '&quot;');
+  // .replace(/&/g, '&amp;');
+}
