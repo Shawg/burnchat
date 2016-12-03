@@ -1,20 +1,27 @@
 var socket = io();
 
 var name, key, nonce;
+<<<<<<< HEAD
 var dhBase = bigInt("13");
 var dhPrime = bigInt("139");
+=======
+var dhBase = 8;
+var dhPrime = 139;
+>>>>>>> a337463e5fdca9350994ee9c886afb9cb6eb14af
 var dhKeys = [];
 var dhSecret;
 var dhSecretNew;
 var keyIndex;
 var inviteIds = [];
+var modal = document.getElementById('myModal');
+var span = document.getElementsByClassName("close")[0];
 
-$('#invite').click(function(){
+$('.invite').click(function(){
   inviteUser();
 });
 
 socket.on('firstUser', function(){
-  dhSecret = rand(200);
+  dhSecret = rand(50);
   keyIndex = dhKeys.length;
   dhKeys.push(dhBase);
   key = dhBase;
@@ -27,9 +34,23 @@ function inviteUser(){
   inviteIds.push(id);
   room = getUrlParam("chat");
   url = location.origin+'/chat/'+room+'/id/'+id+'/invite/'+invite;
-  alert('Nobody is here yet, invite someone to chat with this url: '+url);
+  document.getElementById("inviteURL").innerHTML = url;
+  modal.style.display = "block";
+  
+  //alert('Nobody is here yet, invite someone to chat with this url: '+url);
   socket.emit('inviteSent', invite);
 }
+
+span.onclick = function() {
+    modal.style.display = "none";
+}
+
+window.onclick = function(event) {
+    if (event.target == modal) {
+        modal.style.display = "none";
+    }
+}
+
 
 socket.on('connect', function(){
   name = prompt("What's your name?");
@@ -65,7 +86,11 @@ socket.on('dhRequest', function(data){
   if(inviteIds.indexOf(parseInt(data.id)) == -1){
     return;
   }
+<<<<<<< HEAD
   dhSecretNew = bigInt(String(rand(200)));
+=======
+  dhSecretNew = rand(50);
+>>>>>>> a337463e5fdca9350994ee9c886afb9cb6eb14af
   //adds temp secret value to all keys
   var i = dhKeys.length;
   var newKeys = [];
@@ -131,7 +156,7 @@ socket.on('updatemessages', function (username, msg) {
   msg = sjcl.decrypt(key.toString(), msg);
   message = $("<span></span></br>");
   username = username+": ";
-  message.text(username).append(msg);
+  message.text(username).append(data);
   $('#messages').append(message);
 });
 
