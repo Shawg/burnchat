@@ -1,20 +1,22 @@
 var socket = io();
 
 var name, key, nonce;
-var dhBase = 13;
-var dhPrime = 139;
+var dhBase = bigInt("13");
+var dhPrime = bigInt("139");
 var dhKeys = [];
 var dhSecret;
 var dhSecretNew;
 var keyIndex;
 var inviteIds = [];
+var modal = document.getElementById('myModal');
+var span = document.getElementsByClassName("close")[0];
 
-$('#invite').click(function(){
+$('.invite').click(function(){
   inviteUser();
 });
 
 socket.on('firstUser', function(){
-  dhSecret = rand(200);
+  dhSecret = rand(50);
   keyIndex = dhKeys.length;
   dhKeys.push(dhBase);
   key = dhBase;
@@ -27,9 +29,22 @@ function inviteUser(){
   inviteIds.push(id);
   room = getUrlParam("chat");
   url = location.origin+'/chat/'+room+'/id/'+id+'/invite/'+invite;
-  alert('Nobody is here yet, invite someone to chat with this url: '+url);
+  document.getElementById("inviteURL").innerHTML = url;
+  modal.style.display = "block";
+  //alert('Nobody is here yet, invite someone to chat with this url: '+url);
   socket.emit('inviteSent', invite);
 }
+
+span.onclick = function() {
+    modal.style.display = "none";
+}
+
+window.onclick = function(event) {
+    if (event.target == modal) {
+        modal.style.display = "none";
+    }
+}
+
 
 socket.on('connect', function(){
   name = prompt("What's your name?");
@@ -62,47 +77,62 @@ socket.on('noInvite', function(destination){
   window.location.href = destination;
 });
 
+// The client who invited the user sends them the dhKey array
 socket.on('dhRequest', function(data){
   if(inviteIds.indexOf(parseInt(data.id)) == -1){
     return;
   }
-  dhSecretNew = rand(200);
+  dhSecretNew = bigInt(String(rand(200)));
   //adds temp secret value to all keys
   var i = dhKeys.length;
   var newKeys = [];
-  while(i--) { newKeys[i] = fastModularExponentiation(dhKeys[i], dhSecretNew, dhPrime); }
+  while(i--) { newKeys[i] = dhKeys[i].modPow(dhSecretNew, dhPrime).toString(); }
   if(newKeys.length == 1){
-    tmpKey = fastModularExponentiation(dhBase, dhSecret, dhPrime);
+    tmpKey = dhBase.modPow(dhSecret, dhPrime);
     socket.emit('dhResponse', {
       dhKeys: newKeys,
-      dhPublic: fastModularExponentiation(tmpKey, dhSecretNew, dhPrime),
+      dhPublic: tmpKey.modPow(dhSecretNew, dhPrime).toString(),
       socket: data.socket
     });
   } else {
     socket.emit('dhResponse', {
       dhKeys: newKeys,
-      dhPublic: fastModularExponentiation(key, dhSecretNew, dhPrime),
+      dhPublic: key.modPow(dhSecretNew, dhPrime).toString(),
       socket: data.socket
     });
   }
 });
 
 socket.on('dhBroadcast', function(data){
-  dhKeys = data;
-  key = fastModularExponentiation(dhKeys[keyIndex], dhSecret, dhPrime);
-  console.log(key);
+  console.log('getting new keys');
+  console.log(data);
+  for(i = 0; i < data.length; i++) {
+    dhKeys[i] = bigInt(data[i]);
+  }
+  console.log('new keys');
+  console.log(dhKeys);
+  key = dhKeys[keyIndex].modPow( dhSecret, dhPrime);
 });
 
+// The newly added member adding their secret data to the key array
 socket.on('dhExtend', function(data){
-  dhSecret = rand(50);
+  dhSecret = bigInt(String(rand(200)));
   dhKeys = data.dhKeys.splice();
   var i = data.dhKeys.length;
   keyIndex = i;
-  while(i--) { dhKeys[i] = fastModularExponentiation(data.dhKeys[i], dhSecret, dhPrime); }
-  dhKeys[keyIndex] = data.dhPublic;
+  while(i--) {
+    dhKeys[i] = bigInt(data.dhKeys[i]).modPow(dhSecret, dhPrime).toString();
+  }
+  //converts all key values to string for transport
+  dhKeys[keyIndex] = bigInt(data.dhPublic).toString();
+  console.log(dhKeys);
   socket.emit('dhBroadcast', {
     dhKeys: dhKeys
   });
+
+  for(i = 0; i < dhKeys.length; i++) {
+    dhKeys[i] = bigInt(dhKeys[i]);
+  }
 });
 
 socket.on('updatechat', function (username, data) {
@@ -115,7 +145,9 @@ socket.on('updatechat', function (username, data) {
 });
 
 socket.on('updatemessages', function (username, msg) {
-  msg = sjcl.decrypt(String(key), msg);
+  console.log('printing messge');
+  console.log(key.toString());
+  msg = sjcl.decrypt(key.toString(), msg);
   msg = encodeHTML(msg);
   message = $("<span></span></br>");
   // username = encodeHTML(username);
@@ -130,6 +162,7 @@ $(function(){
     msg = $('#m').val();
     msg = encodeHTML(msg);
     msg = sjcl.encrypt(String(key), msg);
+
     socket.emit('sendchat', msg);
     $('#m').val('');
     return false;
