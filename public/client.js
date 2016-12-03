@@ -8,8 +8,10 @@ var dhSecret;
 var dhSecretNew;
 var keyIndex;
 var inviteIds = [];
+var modal = document.getElementById('myModal');
+var span = document.getElementsByClassName("close")[0];
 
-$('#invite').click(function(){
+$('.invite').click(function(){
   inviteUser();
 });
 
@@ -27,9 +29,23 @@ function inviteUser(){
   inviteIds.push(id);
   room = getUrlParam("chat");
   url = location.origin+'/chat/'+room+'/id/'+id+'/invite/'+invite;
-  alert('Nobody is here yet, invite someone to chat with this url: '+url);
+  document.getElementById("inviteURL").innerHTML = url;
+  modal.style.display = "block";
+  
+  //alert('Nobody is here yet, invite someone to chat with this url: '+url);
   socket.emit('inviteSent', invite);
 }
+
+span.onclick = function() {
+    modal.style.display = "none";
+}
+
+window.onclick = function(event) {
+    if (event.target == modal) {
+        modal.style.display = "none";
+    }
+}
+
 
 socket.on('connect', function(){
   name = prompt("What's your name?");

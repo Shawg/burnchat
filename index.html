@@ -3,10 +3,16 @@
   <head>
     <title>BurnChat</title>
     <link rel="stylesheet" type="text/css" href="/style.css">
+    <link rel="stylesheet" type="text/css" href="/modal.css">
   </head>
-  <body>
-    <h1>For all your private chatting needs</h1>
-    <a href="/newchat">Start a private chat</a>
+  <body style="background-color:#b27770;">
+    <div style="text-align:center">
+    <img src="logo.png" >
+    <h1 style="text-align:center;color:white">Burnchat<br>For all your private chatting needs<br><br></h1>
+    <form method="get" action="/newchat">
+    <button class=startchat href="/newchat">Start a private chat</button>
+    </form>
+    </div>
   </body>
   <script src="https://code.jquery.com/jquery-1.10.2.js"></script>
   <script src="/socket.io/socket.io.js"></script>

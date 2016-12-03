@@ -3,13 +3,38 @@
   <head>
     <title>BurnChat</title>
     <link rel="stylesheet" type="text/css" href="/style.css">
+    <link rel="stylesheet" type="text/css" href="/modal.css">
+    
   </head>
   <body>
-    <ul id="messages"></ul>
-    <button id="invite" type="button">Invite someone to chat</button>
-    <form action="">
+    <div class="header">
+      <img class="logobox" src="/logosmall.png">
+      <button class="invite">Invite</button>
+    </div>
+    <div margin-top=80px>
+        <div style="height:90px;width:100%"></div>
+        <ul id="messages"></ul>
+        <h1> helo <br> helo <br> helo <br> helo <br> helo <br> helo <br> helo <br> helo <br> helo <br> helo <br> helo <br> helo <br> helo <br> helo <br> helo <br> helo <br> helo <br> helo <br> helo <br> helo <br> helo <br> helo <br> helo <br> helo <br> helo <br> helo <br> helo <br> helo <br> helo <br> helo <br> helo <br> helo <br> helo <br> helo <br> helo <br> helo <br> helo <br> helo <br> helo <br> helo <br> helo <br> helo <br> helo <br> helo <br> helo <br> helo <br> helo <br> helo <br> helo <br> helo <br> helo <br> helo <br> helo <br> helo <br> helo <br> helo <br> helo <br> helo <br> helo <br> helo <br> helo <br> helo <br> helo <br> helo <br> helo <br> helo <br> helo <br> </h1>
+    </div>
+    <form1 action="">
       <input id="m" autocomplete="off" /><button>Send</button>
-    </form>
+    </form1>
+
+<div id="myModal" class="modal">
+
+  <!-- Modal content -->
+  <div class="modal-content">
+    <div class="modal-header">
+      <span class="close">×</span>
+      <h2>Invite someone to chat with this URL:</h2>
+    </div>
+    <div class="modal-body">
+      <p id=inviteURL></p>
+    </div>
+  </div>
+
+</div>
+
   </body>
   <script src="https://code.jquery.com/jquery-1.10.2.js"></script>
   <script src="/socket.io/socket.io.js"></script>
