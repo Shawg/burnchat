@@ -1,9 +1,9 @@
 * { margin: 0; padding: 0; box-sizing: border-box; }
 body { font: 13px Helvetica, Arial; }
 form { background: #b27770; padding: 3px; width: 100%;}
-form button { width: 25%; min-width: 300px; background: #c0392b; border: 1px solid white;
+form .startchat { width: 25%; min-width: 300px; background: #c0392b; border: 1px solid white;
 padding: 10px; border-radius:3px;color:white;}
-form button:hover {background: #e74c3c}
+form .startchat:hover {background: #e74c3c}
 #messages { list-style-type: none; margin: 0; padding: 0; }
 #messages li { padding: 5px 10px; }
 #messages li:nth-child(odd) { background: #eee; }

@@ -141,6 +141,7 @@ socket.on('updatechat', function (username, data) {
   data = encodeHTML(data);
   message.text(username).append(data);
   $('#messages').append(message);
+  window.scrollTo(0,document.body.scrollHeight);
 });
 
 socket.on('updatemessages', function (username, msg) {
@@ -153,6 +154,7 @@ socket.on('updatemessages', function (username, msg) {
   username = username+": ";
   message.text(username).append(msg);
   $('#messages').append(message);
+  window.scrollTo(0,document.body.scrollHeight);
 });
 
 // on load of page
