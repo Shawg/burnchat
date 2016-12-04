@@ -1,8 +1,8 @@
 var socket = io();
 
 var name, key, nonce;
-var dhBase = bigInt("13");
-var dhPrime = bigInt("139");
+var dhBase = bigInt("17");
+var dhPrime = bigInt("179769313486231590772930519078902473361797697894230657273430081157732675805500963132708477322407536021120113879871393357658789768814416622492847430639474124377767893424865485276302219601246094119453082952085005768838150682342462881473913110540827237163350510684586298239947245938479716304835356329624262294183");
 var dhKeys = [];
 var dhSecret;
 var dhSecretNew;
@@ -16,10 +16,10 @@ $('.invite').click(function(){
 });
 
 socket.on('firstUser', function(){
-  dhSecret = rand(50);
+  dhSecret = bigInt(String(rand(20000))).pow(String(rand(100)));
   keyIndex = dhKeys.length;
   dhKeys.push(dhBase);
-  key = dhBase;
+  key = dhBase.toString();
   inviteUser();
 });
 
@@ -44,7 +44,6 @@ window.onclick = function(event) {
         modal.style.display = "none";
     }
 }
-
 
 socket.on('connect', function(){
   name = prompt("What's your name?");
@@ -82,7 +81,7 @@ socket.on('dhRequest', function(data){
   if(inviteIds.indexOf(parseInt(data.id)) == -1){
     return;
   }
-  dhSecretNew = bigInt(String(rand(200)));
+  dhSecretNew = bigInt(String(rand(20000))).pow(String(rand(100)));
   //adds temp secret value to all keys
   var i = dhKeys.length;
   var newKeys = [];
@@ -116,7 +115,7 @@ socket.on('dhBroadcast', function(data){
 
 // The newly added member adding their secret data to the key array
 socket.on('dhExtend', function(data){
-  dhSecret = bigInt(String(rand(200)));
+  dhSecret = bigInt(String(rand(20000))).pow(String(rand(100)));
   dhKeys = data.dhKeys.splice();
   var i = data.dhKeys.length;
   keyIndex = i;
