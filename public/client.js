@@ -106,13 +106,9 @@ socket.on('dhRequest', function(data){
 });
 
 socket.on('dhBroadcast', function(data){
-  console.log('getting new keys');
-  console.log(data);
   for(i = 0; i < data.length; i++) {
     dhKeys[i] = bigInt(data[i]);
   }
-  console.log('new keys');
-  console.log(dhKeys);
   key = dhKeys[keyIndex].modPow( dhSecret, dhPrime);
 });
 
@@ -128,7 +124,6 @@ socket.on('dhExtend', function(data){
   }
   //converts all key values to string for transport
   dhKeys[keyIndex] = bigInt(data.dhPublic).toString();
-  console.log(dhKeys);
   socket.emit('dhBroadcast', {
     dhKeys: dhKeys
   });
@@ -151,8 +146,6 @@ socket.on('updatechat', function (username, data) {
 
 socket.on('updatemessages', function (username, msg) {
   myFunction();
-  console.log('printing messge');
-  console.log(key.toString());
   msg = sjcl.decrypt(key.toString(), msg);
   msg = encodeHTML(msg);
   message = $("<span></span></br>");
@@ -219,15 +212,16 @@ function encodeHTML(s) {
 }
 
 function myFunction() {
-  timer = setTimeout(redirect, 8000);
+  var minute = 60000;
+  timer = setTimeout(redirect, minute*5);
 }
 
 function redirect() {
-  console.log(window.location.origin);
+  window.location.href = window.location.origin;
 }
 
 function secureNumber() {
-  var numArray = sjcl.random.randomWords(50,9);
+  var numArray = sjcl.random.randomWords(62,9);
   var retVal = "";
   for(i = 0; i<numArray.length; i++) {
     retVal += String(Math.abs(numArray[i]));

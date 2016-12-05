@@ -83,8 +83,6 @@ io.sockets.on('connection', function (socket) {
   });
 
   socket.on('dhResponse', function(data){
-    console.log('dhResponse');
-    console.log(data);
     io.to(data.socket).emit('dhExtend', {
       dhKeys: data.dhKeys,
       dhPublic: data.dhPublic
@@ -92,8 +90,6 @@ io.sockets.on('connection', function (socket) {
   });
 
   socket.on('dhBroadcast', function(data){
-    console.log('broadcasting new dhKey array');
-    console.log(data);
     io.sockets.in(socket.room).emit('dhBroadcast', data.dhKeys);
   });
 
@@ -110,7 +106,6 @@ function firstUser(socket, data){
 }
 
 function additionalUsers(socket, data){
-  console.log(data);
     if(invites[data.chat].count == 0) {
       var destination = '/full';
       socket.emit('noInvite', destination);
@@ -125,7 +120,6 @@ function additionalUsers(socket, data){
     invites[socket.room].keys.splice(inviteIndex, 1);
     usernames[data.name] = data.name;
     socket.join(data.chat);
-    console.log(socket.id);
     invites[socket.room].count = invites[socket.room].count - 1;
     //socket is so the GDH.2 array can be sent to the requesting
     //user, ID allows the user's socket to be targeted
