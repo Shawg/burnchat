@@ -19,7 +19,7 @@ app.get('/', function(req, res,next) {
 });
 
 app.get('/newchat', function(req, res,next) {
-  room = Math.abs(sjcl.random.randomWords(1,7)[0]);
+  room = Math.random().toString(36).substring(7);
   res.redirect('/chat/'+room);
 });
 

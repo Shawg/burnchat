@@ -24,8 +24,8 @@ socket.on('firstUser', function(){
 });
 
 function inviteUser(){
-  invite = rand(999);
-  id = rand(999);
+  invite = Math.random().toString(36).substring(4);
+  id = Math.random().toString(36).substring(4);
   inviteIds.push(id);
   room = getUrlParam("chat");
   url = location.origin+'/chat/'+room+'/id/'+id+'/invite/'+invite;
@@ -78,7 +78,7 @@ socket.on('noInvite', function(destination){
 
 // The client who invited the user sends them the dhKey array
 socket.on('dhRequest', function(data){
-  if(inviteIds.indexOf(parseInt(data.id)) == -1){
+  if(inviteIds.indexOf(data.id) == -1){
     return;
   }
   dhSecretNew = bigInt(String(rand(20000))).pow(String(rand(100)));
