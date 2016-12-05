@@ -10,13 +10,15 @@ var keyIndex;
 var inviteIds = [];
 var modal = document.getElementById('myModal');
 var span = document.getElementsByClassName("close")[0];
+var timer;
 
 $('.invite').click(function(){
   inviteUser();
 });
 
 socket.on('firstUser', function(){
-  dhSecret = bigInt(String(rand(20000))).pow(String(rand(100)));
+  // dhSecret = bigInt(String(rand(20000))).pow(String(rand(100)));
+  dhSecret = bigInt(secureNumber());
   keyIndex = dhKeys.length;
   dhKeys.push(dhBase);
   key = dhBase.toString();
@@ -81,7 +83,8 @@ socket.on('dhRequest', function(data){
   if(inviteIds.indexOf(data.id) == -1){
     return;
   }
-  dhSecretNew = bigInt(String(rand(20000))).pow(String(rand(100)));
+  dhSecretNew = bigInt(secureNumber());
+  // dhSecretNew = bigInt(String(rand(20000))).pow(String(rand(100)));
   //adds temp secret value to all keys
   var i = dhKeys.length;
   var newKeys = [];
@@ -115,7 +118,8 @@ socket.on('dhBroadcast', function(data){
 
 // The newly added member adding their secret data to the key array
 socket.on('dhExtend', function(data){
-  dhSecret = bigInt(String(rand(20000))).pow(String(rand(100)));
+  dhSecret = bigInt(secureNumber());
+  // dhSecret = bigInt(String(rand(20000))).pow(String(rand(100)));
   dhKeys = data.dhKeys.splice();
   var i = data.dhKeys.length;
   keyIndex = i;
@@ -135,6 +139,7 @@ socket.on('dhExtend', function(data){
 });
 
 socket.on('updatechat', function (username, data) {
+  myFunction();
   message = $("<span></span></br>");
   username = encodeHTML(username);
   username = username+": ";
@@ -145,6 +150,7 @@ socket.on('updatechat', function (username, data) {
 });
 
 socket.on('updatemessages', function (username, msg) {
+  myFunction();
   console.log('printing messge');
   console.log(key.toString());
   msg = sjcl.decrypt(key.toString(), msg);
@@ -210,4 +216,21 @@ function encodeHTML(s) {
   .replace(/>/g, '&gt;')
   .replace(/"/g, '&quot;');
   // .replace(/&/g, '&amp;');
+}
+
+function myFunction() {
+  timer = setTimeout(redirect, 8000);
+}
+
+function redirect() {
+  console.log(window.location.origin);
+}
+
+function secureNumber() {
+  var numArray = sjcl.random.randomWords(50,9);
+  var retVal = "";
+  for(i = 0; i<numArray.length; i++) {
+    retVal += String(Math.abs(numArray[i]));
+  }
+  return retVal;
 }
