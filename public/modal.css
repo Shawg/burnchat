@@ -14,6 +14,8 @@
 
 /* Modal Content */
 .modal-content {
+    word-wrap: break-word;
+    min-width:500px;
     position: relative;
     background-color: #fefefe;
     margin: auto;
@@ -54,12 +56,13 @@
 }
 
 .modal-header {
+    word-wrap: parent;
     padding: 2px 16px;
     background-color: #e74c3c;
     color: white;
 }
 
-.modal-body {padding: 2px 16px;}
+.modal-body {padding: 2px 16px; word-wrap: parent}
 
 #inviteURL {
     font-size:21px;
@@ -68,7 +71,7 @@
 .header {
     position:fixed;
     top:0px;
-    background-color:#b27770;
+    background-color:#404040;#b27770;
     height: 70px;
     width: 100%;
     verticle-align:center;

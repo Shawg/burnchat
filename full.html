@@ -2,10 +2,20 @@
 <html>
   <head>
     <title>BurnChat</title>
-    <link rel="stylesheet" type="text/css" href="style.css">
+    <link rel="stylesheet" type="text/css" href="/indexstyle.css">
+    <link rel="stylesheet" type="text/css" href="/modal.css">
   </head>
-  <body>
-    <h1>You don't have access to this room</h1>
+  <body style="background-color:#b27770;">
+    <div style="text-align:center">
+    <img src="logo.png" >
+    <h1 style="text-align:center;color:white">Burnchat<br>The URL you have used is invalid<br><br></h1>
+    <form method="get" action="/newchat">
+    <button class=startchat href="/newchat">Start a private chat</button>
+    </form>
+    </div>
   </body>
+  <script src="/BigInteger.min.js"></script>
   <script src="https://code.jquery.com/jquery-1.10.2.js"></script>
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/sjcl/1.0.6/sjcl.js"></script>
 </html>
